@@ -1,0 +1,53 @@
+The only small issue was this:
+
+cd rag-from-scratch
+The system cannot find the path specified.
+
+That happened because you were already inside the project folder:
+
+D:\draft\rag\rag-from-scratch\rag-from-scratch>
+
+So don't run cd rag-from-scratch again.
+
+Next step: configure .env
+
+First check your files:
+
+dir
+
+You should see something like:
+
+app
+requirements.txt
+.env.example
+README.md
+
+Create the .env file:
+
+copy .env.example .env
+
+Then open it:
+
+notepad .env
+
+Configure the LLM provider. For example, if using OpenAI:
+
+LLM_PROVIDER=openai
+OPENAI_API_KEY=your_api_key_here
+OPENAI_MODEL=gpt-4.1-mini
+
+Save and close Notepad.
+
+Start the RAG server
+
+Run:
+
+uvicorn app.main:app --reload
+
+If everything works, you'll see something similar to:
+
+Uvicorn running on http://127.0.0.1:8000
+
+Then open:
+
+http://127.0.0.1:8000

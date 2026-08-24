@@ -12,7 +12,58 @@ body {
     radial-gradient(circle at 85% 80%, rgba(0, 217, 174, .12), transparent 30%),
     #08101f;
 }
-.shell { max-width: 1280px; margin: auto; padding: 32px 20px; }
+
+/* Floating Paper Animation Performance Optimization */
+.paper-field {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+.paper {
+  position: absolute;
+  bottom: -20vh;
+  width: 64px;
+  height: auto;
+  opacity: 0;
+  will-change: transform, opacity;
+  animation-name: paper-float;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+.paper rect {
+  fill: rgba(20, 32, 60, .78);
+  stroke: rgba(140, 163, 255, .35);
+  stroke-width: 1.4;
+}
+.paper .fold { fill: none; stroke: none; }
+.paper .dogear { fill: rgba(8, 16, 31, .9); stroke: rgba(140, 163, 255, .35); stroke-width: 1.4; }
+.paper line { stroke: rgba(180, 195, 240, .35); stroke-width: 2.5; stroke-linecap: round; }
+.paper .pdf-tag { fill: rgba(0, 217, 174, .55); font-size: 15px; font-weight: 800; letter-spacing: .06em; font-family: Inter, ui-sans-serif, sans-serif; }
+
+.p1 { left: 6%;  width: 46px; animation-duration: 26s; animation-delay: -2s; }
+.p2 { left: 18%; width: 60px; animation-duration: 32s; animation-delay: -14s; }
+.p3 { left: 30%; width: 38px; animation-duration: 22s; animation-delay: -8s; }
+.p4 { left: 46%; width: 52px; animation-duration: 29s; animation-delay: -20s; }
+.p5 { left: 60%; width: 40px; animation-duration: 24s; animation-delay: -4s; }
+.p6 { left: 72%; width: 58px; animation-duration: 34s; animation-delay: -26s; }
+.p7 { left: 84%; width: 44px; animation-duration: 27s; animation-delay: -10s; }
+.p8 { left: 94%; width: 36px; animation-duration: 23s; animation-delay: -17s; }
+
+@keyframes paper-float {
+  0%   { transform: translate3d(0, 0, 0) rotate(-6deg); opacity: 0; }
+  8%   { opacity: .55; }
+  50%  { transform: translate3d(3vw, -55vh, 0) rotate(8deg); opacity: .55; }
+  92%  { opacity: .4; }
+  100% { transform: translate3d(-2vw, -115vh, 0) rotate(-4deg); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .paper { animation: none; opacity: .18; bottom: 10vh; }
+}
+
+.shell { position: relative; z-index: 1; max-width: 1280px; margin: auto; padding: 32px 20px; }
 header { display:flex; justify-content:space-between; gap:20px; align-items:flex-start; margin-bottom:28px; }
 .eyebrow { font-size:.72rem; letter-spacing:.15em; color:#8ca3ff; }
 h1 { margin:7px 0; font-size:clamp(2rem, 5vw, 3.5rem); }
@@ -30,6 +81,7 @@ h2 { margin-top:0; font-size:1rem; }
 .doc-row { display:flex; justify-content:space-between; gap:8px; }
 .doc small { display:block; color:#8190b0; margin-top:5px; }
 .delete { background:transparent; border:0; color:#ff8e9c; cursor:pointer; }
+.delete:disabled { opacity: 0.5; cursor: not-allowed; }
 .chat { display:flex; flex-direction:column; overflow:hidden; }
 .messages { flex:1; padding:24px; overflow-y:auto; min-height:520px; }
 .message { display:flex; margin-bottom:18px; }
@@ -44,6 +96,8 @@ textarea { flex:1; resize:none; border:1px solid #33466f; border-radius:12px; ba
 button { border:0; border-radius:12px; padding:0 20px; background:#6178ff; color:white; cursor:pointer; font-weight:700; }
 button:disabled { opacity:.55; cursor:wait; }
 #uploadMessage { margin-top:10px; color:#a9b8d9; font-size:.85rem; }
+.error { color: #ff8e9c; }
+
 @media (max-width:800px) {
   header, main { display:block; }
   header { margin-bottom:18px; }

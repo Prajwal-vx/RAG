@@ -3,57 +3,269 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RAG From Scratch</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>VerityRAG — Precision Evidence-First AI Knowledge Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
-  <div class="paper-field" aria-hidden="true">
-    <svg class="paper p1" viewBox="0 0 100 130"><rect x="2" y="2" width="96" height="126" rx="4"/><path d="M2 2 L98 2 L98 128 L2 128 Z" class="fold"/><line x1="16" y1="34" x2="84" y2="34"/><line x1="16" y1="50" x2="84" y2="50"/><line x1="16" y1="66" x2="70" y2="66"/><line x1="16" y1="82" x2="84" y2="82"/><line x1="16" y1="98" x2="60" y2="98"/></svg>
-    <svg class="paper p2" viewBox="0 0 100 130"><rect x="2" y="2" width="96" height="126" rx="4"/><path d="M70 2 L98 30 L70 30 Z" class="dogear"/><line x1="16" y1="46" x2="84" y2="46"/><line x1="16" y1="62" x2="84" y2="62"/><line x1="16" y1="78" x2="55" y2="78"/></svg>
-    <svg class="paper p3" viewBox="0 0 100 130"><rect x="2" y="2" width="96" height="126" rx="4"/><text x="50" y="40" text-anchor="middle" class="pdf-tag">PDF</text><line x1="16" y1="60" x2="84" y2="60"/><line x1="16" y1="76" x2="84" y2="76"/><line x1="16" y1="92" x2="65" y2="92"/></svg>
-    <svg class="paper p4" viewBox="0 0 100 130"><rect x="2" y="2" width="96" height="126" rx="4"/><path d="M70 2 L98 30 L70 30 Z" class="dogear"/><line x1="16" y1="46" x2="84" y2="46"/><line x1="16" y1="62" x2="72" y2="62"/></svg>
-    <svg class="paper p5" viewBox="0 0 100 130"><rect x="2" y="2" width="96" height="126" rx="4"/><text x="50" y="40" text-anchor="middle" class="pdf-tag">PDF</text><line x1="16" y1="60" x2="84" y2="60"/><line x1="16" y1="76" x2="60" y2="76"/></svg>
-    <svg class="paper p6" viewBox="0 0 100 130"><rect x="2" y="2" width="96" height="126" rx="4"/><line x1="16" y1="34" x2="84" y2="34"/><line x1="16" y1="50" x2="84" y2="50"/><line x1="16" y1="66" x2="70" y2="66"/><line x1="16" y1="82" x2="84" y2="82"/></svg>
-    <svg class="paper p7" viewBox="0 0 100 130"><rect x="2" y="2" width="96" height="126" rx="4"/><path d="M70 2 L98 30 L70 30 Z" class="dogear"/><line x1="16" y1="46" x2="84" y2="46"/><line x1="16" y1="62" x2="84" y2="62"/><line x1="16" y1="78" x2="50" y2="78"/></svg>
-    <svg class="paper p8" viewBox="0 0 100 130"><rect x="2" y="2" width="96" height="126" rx="4"/><text x="50" y="40" text-anchor="middle" class="pdf-tag">PDF</text><line x1="16" y1="60" x2="84" y2="60"/><line x1="16" y1="76" x2="84" y2="76"/></svg>
-  </div>
-  <div class="shell">
-    <header>
+  <!-- Top Application Header -->
+  <header class="top-nav">
+    <div class="brand">
+      <div class="brand-symbol">V</div>
       <div>
-        <span class="eyebrow">RETRIEVAL-AUGMENTED GENERATION</span>
-        <h1>RAG From Scratch</h1>
-        <p>Upload documents. Search them semantically. Get grounded answers.</p>
+        <div class="brand-text">VerityRAG</div>
       </div>
-      <div id="status" class="status">Checking system...</div>
-    </header>
+      <span class="brand-tag">v2.0 • Evidence Core</span>
+    </div>
 
-    <main>
-      <aside class="panel">
-        <h2>Knowledge Base</h2>
-        <label class="upload">
-          <input id="fileInput" type="file" accept=".pdf,.txt,.md,.docx" />
-          <span>+ Upload Document</span>
+    <div class="nav-actions">
+      <div id="systemStatus" class="status-indicator">
+        <span class="status-dot"></span>
+        <span id="statusText">System Ready • Dual Index Active</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Workspace Grid -->
+  <div class="app-container">
+    <!-- Left Navigation & Knowledge Ingestion -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="section-title">Navigation</div>
+        <div class="nav-tabs">
+          <button class="nav-tab-btn active" data-view="chat-view">
+            <span>💬</span> Research Chat
+          </button>
+          <button class="nav-tab-btn" data-view="studio-view">
+            <span>🔬</span> Research Studio (Multi-Doc)
+          </button>
+          <button class="nav-tab-btn" data-view="observatory-view">
+            <span>📊</span> RAG Observatory
+          </button>
+          <button class="nav-tab-btn" data-view="history-view">
+            <span>📑</span> Saved Dossiers
+          </button>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="section-title">
+          <span>Knowledge Ingestion</span>
+          <span id="docCountBadge" style="font-size: 10px; color: var(--accent-gold);">0 Files</span>
+        </div>
+        
+        <label class="upload-card">
+          <input id="fileUploadInput" type="file" accept=".pdf,.txt,.md,.docx" />
+          <div class="upload-icon">📄</div>
+          <div class="upload-text">Upload Document</div>
+          <div class="upload-hint">PDF, DOCX, MD, TXT (Max 50MB)</div>
         </label>
-        <div id="uploadMessage"></div>
-        <div id="documents" class="documents"></div>
-      </aside>
+        
+        <div id="uploadStatusMsg" style="font-size: 11px; margin-top: 8px; color: var(--text-secondary); font-family: var(--font-mono);"></div>
 
-      <section class="chat panel">
-        <div id="messages" class="messages">
-          <div class="message assistant">
-            <div class="bubble">
-              Upload one or more documents, then ask me a question. I will retrieve relevant chunks before answering.
+        <div class="section-title" style="margin-top: 18px;">Indexed Knowledge Base</div>
+        <div id="docListContainer" class="doc-list">
+          <div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 12px;">No documents indexed yet.</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Center Workspace: Chat & Studio & Observatory -->
+    <main class="center-workspace">
+      <!-- Chat View -->
+      <section id="chat-view" class="view-container active" style="padding: 0; display: flex; flex-direction: column;">
+        <div class="mode-bar">
+          <div class="mode-selectors">
+            <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-right: 6px;">Mode:</span>
+            <button class="mode-pill active" data-mode="quick">Quick Answer</button>
+            <button class="mode-pill" data-mode="detailed">Detailed Research</button>
+            <button class="mode-pill" data-mode="compare">Compare Sources</button>
+            <button class="mode-pill" data-mode="structured">Extract Data</button>
+            <button class="mode-pill" data-mode="beginner">Plain Terms</button>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button id="saveSessionBtn" class="btn-secondary" style="padding: 4px 10px; font-size: 11px;">Save Dossier</button>
+          </div>
+        </div>
+
+        <div id="chatHistory" class="chat-history">
+          <div class="chat-bubble assistant">
+            <div class="bubble-header">
+              <span>VERITYRAG ORCHESTRATOR</span> • <span>EVIDENCE GROUNDED</span>
+            </div>
+            <div class="bubble-body">
+              Welcome to <strong>VerityRAG</strong>. Every factual answer generated here is verified against retrieved chunks with inline citations.<br><br>
+              <strong>Getting Started:</strong><br>
+              1. Upload your documents in the left sidebar.<br>
+              2. Ask a question or run comparative synthesis across documents.<br>
+              3. Review the <strong>Evidence Ledger</strong> on the right to audit citations, detect potential contradictions via <strong>Conflict Radar</strong>, and inspect verified claims.
             </div>
           </div>
         </div>
 
-        <form id="chatForm">
-          <textarea id="question" placeholder="Ask something about your indexed documents..." rows="2"></textarea>
-          <button id="sendButton" type="submit">Send</button>
-        </form>
+        <div class="composer-area">
+          <form id="chatInputForm" class="composer-box">
+            <textarea id="questionInput" class="composer-input" rows="2" placeholder="Ask a question across your indexed documents... (Shift+Enter for newline)"></textarea>
+            <button id="submitQuestionBtn" type="submit" class="composer-submit">
+              <span>Analyze</span> →
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Multi-Document Research Studio View -->
+      <section id="studio-view" class="view-container">
+        <div>
+          <h2 style="font-size: 18px; font-weight: 700; color: var(--text-primary);">Multi-Document Research Studio</h2>
+          <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Perform side-by-side synthesis and cross-examination across 2 or more indexed files.</p>
+        </div>
+
+        <div style="background: var(--bg-surface); padding: 16px; border-radius: 8px; border: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 12px;">
+          <div style="font-size: 12px; font-weight: 600; color: var(--text-primary);">Select Documents to Cross-Examine:</div>
+          <div id="studioDocCheckboxes" style="display: flex; flex-wrap: wrap; gap: 10px; font-size: 12px;">
+            <span style="color: var(--text-muted);">Upload at least two documents first.</span>
+          </div>
+          <input id="studioQueryInput" type="text" placeholder="Optional focus topic (e.g. 'Project delivery deadlines and system specs')" style="background: var(--bg-main); border: 1px solid var(--border-subtle); padding: 10px; border-radius: 6px; color: var(--text-primary); font-size: 13px;" />
+          <div>
+            <button id="runStudioCompareBtn" class="btn-primary">Execute Multi-Doc Synthesis</button>
+          </div>
+        </div>
+
+        <div id="studioResultsArea" style="display: none; flex-direction: column; gap: 16px;">
+          <div style="background: var(--bg-surface); padding: 16px; border-radius: 8px; border: 1px solid var(--border-subtle);">
+            <h3 style="font-size: 14px; font-weight: 600; color: var(--accent-gold); margin-bottom: 10px;">Synthesis Matrix</h3>
+            <div id="studioMatrixContainer" style="overflow-x: auto;"></div>
+          </div>
+
+          <div style="background: var(--bg-surface); padding: 16px; border-radius: 8px; border: 1px solid var(--border-subtle);">
+            <h3 style="font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">Consensus & Divergence Analysis</h3>
+            <div id="studioSynthesisText" style="font-size: 13px; line-height: 1.6; color: var(--text-secondary); white-space: pre-wrap;"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RAG Observatory View -->
+      <section id="observatory-view" class="view-container">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h2 style="font-size: 18px; font-weight: 700; color: var(--text-primary);">RAG Observatory & Evaluation Benchmark</h2>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Measure true retrieval recall, MRR, citation validity, and latency comparing Enhanced Hybrid RAG vs Baseline Semantic-Only.</p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button id="runEnhancedBenchmarkBtn" class="btn-primary">Run Enhanced Hybrid Benchmark</button>
+            <button id="runBaselineBenchmarkBtn" class="btn-secondary">Run Baseline Semantic-Only</button>
+          </div>
+        </div>
+
+        <div class="metric-grid">
+          <div class="metric-card">
+            <span class="metric-label">Recall @ K</span>
+            <span id="obsRecallVal" class="metric-val">--</span>
+            <span class="metric-sub">Keyword passage hit rate</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Mean Reciprocal Rank (MRR)</span>
+            <span id="obsMrrVal" class="metric-val">--</span>
+            <span class="metric-sub">Rank quality metric</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Citation Precision</span>
+            <span id="obsCitationVal" class="metric-val">--</span>
+            <span class="metric-sub">Source provenance integrity</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Avg Retrieval Latency</span>
+            <span id="obsLatencyVal" class="metric-val">--</span>
+            <span class="metric-sub">Pipeline execution time</span>
+          </div>
+        </div>
+
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 18px;">
+          <h3 style="font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 12px;">Evaluation Benchmark History</h3>
+          <div id="benchmarkRunsHistory" style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+              <thead>
+                <tr style="text-align: left; border-bottom: 1px solid var(--border-subtle); color: var(--text-muted);">
+                  <th style="padding: 8px;">Timestamp</th>
+                  <th style="padding: 8px;">Pipeline Mode</th>
+                  <th style="padding: 8px;">Recall@5</th>
+                  <th style="padding: 8px;">MRR</th>
+                  <th style="padding: 8px;">Citation Precision</th>
+                  <th style="padding: 8px;">Latency (ms)</th>
+                </tr>
+              </thead>
+              <tbody id="evalHistoryTbody">
+                <tr><td colspan="6" style="padding: 12px; text-align: center; color: var(--text-muted);">No runs recorded yet. Click a benchmark button above to execute.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Saved Dossiers View -->
+      <section id="history-view" class="view-container">
+        <div>
+          <h2 style="font-size: 18px; font-weight: 700; color: var(--text-primary);">Saved Research Dossiers</h2>
+          <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Reproducible, timestamped records of validated claims and cited evidence.</p>
+        </div>
+        <div id="savedSessionsList" style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="font-size: 12px; color: var(--text-muted);">No saved dossiers yet. Save any conversation using 'Save Dossier'.</div>
+        </div>
       </section>
     </main>
+
+    <!-- Right Contextual Panel: The Evidence Ledger & Conflict Radar -->
+    <aside class="inspection-panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <span>The Evidence Ledger</span>
+          <span id="ledgerBadge" class="badge badge-verified">Active</span>
+        </div>
+      </div>
+
+      <div class="panel-content">
+        <!-- Conflict Radar Section -->
+        <div id="conflictAlertBox" style="display: none;" class="conflict-alert">
+          <div class="conflict-alert-title">
+            <span>⚠️</span> Conflict Radar: Contradiction Detected
+          </div>
+          <div id="conflictAlertText" style="font-size: 11px; line-height: 1.4; color: var(--text-primary);"></div>
+          <div id="conflictDuoContainer" class="conflict-duo"></div>
+        </div>
+
+        <!-- Knowledge Gap Section -->
+        <div id="gapAlertBox" style="display: none; background: var(--accent-cyan-subtle); border: 1px solid rgba(14, 165, 233, 0.3); border-radius: 6px; padding: 12px;">
+          <div style="font-size: 11px; font-weight: 700; color: var(--accent-cyan); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+            <span>ℹ️</span> Knowledge Gap Analysis
+          </div>
+          <div id="gapSummary" style="font-size: 11px; color: var(--text-primary); line-height: 1.4;"></div>
+        </div>
+
+        <!-- Retrieval Diagnostics Box -->
+        <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 12px;">
+          <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 6px;">
+            Retrieval Diagnostics
+          </div>
+          <div id="diagnosticsDetails" style="font-size: 11px; font-family: var(--font-mono); color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px;">
+            <div>Method: <span style="color: var(--accent-gold);">Hybrid (BM25 + Chroma)</span></div>
+            <div>Latency: <span>--</span></div>
+            <div>Fused Chunks: <span>--</span></div>
+          </div>
+        </div>
+
+        <!-- Verified Claim Items -->
+        <div class="section-title">Verified Claims & Citations</div>
+        <div id="claimsLedgerList" style="display: flex; flex-direction: column; gap: 10px;">
+          <div style="font-size: 11px; color: var(--text-muted); text-align: center; padding: 16px;">
+            Submit a question to view claim-by-claim verified evidence.
+          </div>
+        </div>
+      </div>
+    </aside>
   </div>
-  <script src="app.js"></script>
+
+  <script src="/static/app.js"></script>
 </body>
 </html>

@@ -87,12 +87,17 @@ def load_file(path: Path, document_id: str, original_filename: str | None = None
                 raise
             raise ValueError(f"Failed to parse PDF document: {str(exc)}")
 
-    if ext == ".docx":
+    elif ext == ".docx":
         try:
             docx = DocxDocument(str(path))
             text = "\n".join(p.text.strip() for p in docx.paragraphs if p.text.strip())
         except Exception as exc:
             raise ValueError(f"Failed to parse DOCX document: {str(exc)}")
+    elif ext in {".txt", ".md"}:
+        try:
+            text = path.read_text(encoding="utf-8", errors="ignore").strip()
+        except Exception as exc:
+            raise ValueError(f"Failed to read text document: {str(exc)}")
     else:
         text = path.read_text(encoding="utf-8", errors="ignore").strip()
 

@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <!-- Top Application Header -->
@@ -25,6 +25,9 @@
         <span class="status-dot"></span>
         <span id="statusText">System Ready • Dual Index Active</span>
       </div>
+      <button id="toggleLedgerBtn" class="ledger-toggle-btn" title="Toggle Evidence Ledger on smaller displays">
+        <span>📋</span> Ledger
+      </button>
     </div>
   </header>
 
@@ -75,7 +78,7 @@
     <!-- Center Workspace: Chat & Studio & Observatory -->
     <main class="center-workspace">
       <!-- Chat View -->
-      <section id="chat-view" class="view-container active" style="padding: 0; display: flex; flex-direction: column;">
+      <section id="chat-view" class="view-container active">
         <div class="mode-bar">
           <div class="mode-selectors">
             <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-right: 6px;">Mode:</span>
@@ -107,7 +110,7 @@
 
         <div class="composer-area">
           <form id="chatInputForm" class="composer-box">
-            <textarea id="questionInput" class="composer-input" rows="2" placeholder="Ask a question across your indexed documents... (Shift+Enter for newline)"></textarea>
+            <textarea id="questionInput" class="composer-input" rows="2" placeholder="Ask a question across your indexed documents... (Press Enter to submit, Shift+Enter for new line)"></textarea>
             <button id="submitQuestionBtn" type="submit" class="composer-submit">
               <span>Analyze</span> →
             </button>
@@ -217,12 +220,13 @@
     </main>
 
     <!-- Right Contextual Panel: The Evidence Ledger & Conflict Radar -->
-    <aside class="inspection-panel">
+    <aside id="inspectionPanel" class="inspection-panel">
       <div class="panel-header">
         <div class="panel-title">
           <span>The Evidence Ledger</span>
           <span id="ledgerBadge" class="badge badge-verified">Active</span>
         </div>
+        <button id="closeLedgerMobileBtn" class="close-panel-btn">✕</button>
       </div>
 
       <div class="panel-content">
@@ -255,8 +259,16 @@
           </div>
         </div>
 
+        <!-- Retrieved Passages / Sources Section -->
+        <div class="section-title">Retrieved Source Passages</div>
+        <div id="sourcePassagesList" style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="font-size: 11px; color: var(--text-muted); text-align: center; padding: 10px;">
+            No retrieved passages yet.
+          </div>
+        </div>
+
         <!-- Verified Claim Items -->
-        <div class="section-title">Verified Claims & Citations</div>
+        <div class="section-title" style="margin-top: 10px;">Verified Claims & Citations</div>
         <div id="claimsLedgerList" style="display: flex; flex-direction: column; gap: 10px;">
           <div style="font-size: 11px; color: var(--text-muted); text-align: center; padding: 16px;">
             Submit a question to view claim-by-claim verified evidence.
@@ -266,6 +278,6 @@
     </aside>
   </div>
 
-  <script src="/static/app.js"></script>
+  <script src="static/app.js"></script>
 </body>
 </html>

@@ -15,6 +15,7 @@ const chatInputForm = $("chatInputForm");
 const questionInput = $("questionInput");
 const submitQuestionBtn = $("submitQuestionBtn");
 const claimsLedgerList = $("claimsLedgerList");
+const sourcePassagesList = $("sourcePassagesList");
 const conflictAlertBox = $("conflictAlertBox");
 const conflictAlertText = $("conflictAlertText");
 const conflictDuoContainer = $("conflictDuoContainer");
@@ -32,6 +33,9 @@ const runBaselineBenchmarkBtn = $("runBaselineBenchmarkBtn");
 const evalHistoryTbody = $("evalHistoryTbody");
 const saveSessionBtn = $("saveSessionBtn");
 const savedSessionsList = $("savedSessionsList");
+const toggleLedgerBtn = $("toggleLedgerBtn");
+const closeLedgerMobileBtn = $("closeLedgerMobileBtn");
+const inspectionPanel = $("inspectionPanel");
 
 // View Switching
 document.querySelectorAll(".nav-tab-btn").forEach(btn => {
@@ -40,7 +44,9 @@ document.querySelectorAll(".nav-tab-btn").forEach(btn => {
     document.querySelectorAll(".view-container").forEach(v => v.classList.remove("active"));
     btn.classList.add("active");
     const target = $(btn.dataset.view);
-    if (target) target.classList.add("active");
+    if (target) {
+      target.classList.add("active");
+    }
 
     if (btn.dataset.view === "observatory-view") {
       fetchEvalHistory();
@@ -59,6 +65,69 @@ document.querySelectorAll(".mode-pill").forEach(pill => {
   });
 });
 
+// Mobile / Responsive Panel Toggle
+if (toggleLedgerBtn && inspectionPanel) {
+  toggleLedgerBtn.addEventListener("click", () => {
+    inspectionPanel.classList.toggle("open");
+  });
+}
+if (closeLedgerMobileBtn && inspectionPanel) {
+  closeLedgerMobileBtn.addEventListener("click", () => {
+    inspectionPanel.classList.remove("open");
+  });
+}
+
+// Markdown formatter with Table, Bold, and Newlines
+function formatMarkdown(content) {
+  if (!content) return "";
+  let clean = content
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+  // Headers
+  clean = clean.replace(/^### (.*$)/gim, '<h3 style="color:var(--accent-gold); font-size:14px; margin:10px 0 6px;">$1</h3>');
+  clean = clean.replace(/^## (.*$)/gim, '<h2 style="color:var(--text-primary); font-size:16px; margin:12px 0 8px;">$1</h2>');
+  clean = clean.replace(/^# (.*$)/gim, '<h1 style="color:var(--text-primary); font-size:18px; margin:14px 0 10px;">$1</h1>');
+
+  // Bold
+  clean = clean.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+  // Markdown tables
+  const lines = clean.split("\n");
+  let inTable = false;
+  let tableHtml = "";
+  let resultLines = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (line.startsWith("|") && line.endsWith("|")) {
+      if (line.includes("---")) continue; // separator row
+      const cells = line.slice(1, -1).split("|").map(c => c.trim());
+      if (!inTable) {
+        inTable = true;
+        tableHtml = '<table><thead><tr>' + cells.map(c => `<th>${c}</th>`).join("") + '</tr></thead><tbody>';
+      } else {
+        tableHtml += '<tr>' + cells.map(c => `<td>${c}</td>`).join("") + '</tr>';
+      }
+    } else {
+      if (inTable) {
+        tableHtml += '</tbody></table>';
+        resultLines.push(tableHtml);
+        inTable = false;
+        tableHtml = "";
+      }
+      resultLines.push(line);
+    }
+  }
+  if (inTable) {
+    tableHtml += '</tbody></table>';
+    resultLines.push(tableHtml);
+  }
+
+  return resultLines.join("<br>");
+}
+
 // Add message to chat bubble
 function appendChatMessage(role, title, content) {
   const bubble = document.createElement("div");
@@ -70,10 +139,7 @@ function appendChatMessage(role, title, content) {
 
   const body = document.createElement("div");
   body.className = "bubble-body";
-  
-  // Format markdown tables / newlines simply
-  let formatted = content.replace(/\n/g, "<br>");
-  body.innerHTML = formatted;
+  body.innerHTML = formatMarkdown(content);
 
   bubble.appendChild(header);
   bubble.appendChild(body);
@@ -84,6 +150,7 @@ function appendChatMessage(role, title, content) {
 // Render Evidence Ledger & Conflict Radar
 function renderEvidenceLedger(data) {
   claimsLedgerList.innerHTML = "";
+  if (sourcePassagesList) sourcePassagesList.innerHTML = "";
 
   // 1. Conflict Radar
   if (data.conflict_detected && data.conflicts && data.conflicts.length > 0) {
@@ -123,7 +190,27 @@ function renderEvidenceLedger(data) {
     `;
   }
 
-  // 4. Claims Ledger Items
+  // 4. Source Passages
+  if (sourcePassagesList && data.sources && data.sources.length > 0) {
+    data.sources.forEach((s, idx) => {
+      const pCard = document.createElement("div");
+      pCard.className = "passage-card";
+      pCard.innerHTML = `
+        <div class="passage-meta">
+          <span>[${idx + 1}] ${s.filename} (P.${s.page})</span>
+          <span>Chunk ${s.chunk_id}</span>
+        </div>
+        <div style="color: var(--text-secondary); line-height: 1.4;">
+          "${s.preview}"
+        </div>
+      `;
+      sourcePassagesList.appendChild(pCard);
+    });
+  } else if (sourcePassagesList) {
+    sourcePassagesList.innerHTML = `<div style="font-size: 11px; color: var(--text-muted); text-align: center; padding: 8px;">No source chunks returned.</div>`;
+  }
+
+  // 5. Claims Ledger Items
   if (data.evidence_ledger && data.evidence_ledger.length > 0) {
     data.evidence_ledger.forEach((item, idx) => {
       const card = document.createElement("div");
@@ -241,6 +328,14 @@ docListContainer.addEventListener("click", async (e) => {
   }
 });
 
+// Enter key submit handling for textarea
+questionInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    chatInputForm.dispatchEvent(new Event("submit", { cancelable: true }));
+  }
+});
+
 // Chat submit
 chatInputForm.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -341,11 +436,11 @@ async function fetchSavedSessions() {
       item.innerHTML = `
         <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
           <strong style="color: var(--accent-gold); font-size: 13px;">${s.title}</strong>
-          <span style="font-size: 10px; color: var(--text-muted); font-family: var(--font-mono);">${s.created_at.substring(0, 10)}</span>
+          <span style="font-size: 10px; color: var(--text-muted); font-family: var(--font-mono);">${s.created_at ? s.created_at.substring(0, 10) : ''}</span>
         </div>
         <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;"><strong>Query:</strong> ${s.question}</div>
         <div style="font-size: 12px; color: var(--text-primary); line-height: 1.5; background: var(--bg-surface-elevated); padding: 10px; border-radius: 4px;">
-          ${s.answer.replace(/\n/g, "<br>")}
+          ${formatMarkdown(s.answer)}
         </div>
       `;
       savedSessionsList.appendChild(item);
@@ -406,7 +501,7 @@ runStudioCompareBtn.addEventListener("click", async () => {
     tableHtml += `</tbody></table>`;
     studioMatrixContainer.innerHTML = tableHtml;
 
-    studioSynthesisText.textContent = data.synthesis;
+    studioSynthesisText.innerHTML = formatMarkdown(data.synthesis);
   } catch (err) {
     alert(`Studio error: ${err.message}`);
   } finally {
@@ -459,7 +554,7 @@ async function fetchEvalHistory() {
       const tr = document.createElement("tr");
       tr.style.borderBottom = "1px solid var(--border-subtle)";
       tr.innerHTML = `
-        <td style="padding: 8px; font-family: var(--font-mono); color: var(--text-muted);">${r.timestamp.substring(11, 19)}</td>
+        <td style="padding: 8px; font-family: var(--font-mono); color: var(--text-muted);">${r.timestamp ? r.timestamp.substring(11, 19) : ''}</td>
         <td style="padding: 8px; font-weight: 600; color: ${r.mode === 'enhanced' ? 'var(--accent-gold)' : 'var(--text-secondary)'};">${r.mode.toUpperCase()}</td>
         <td style="padding: 8px; font-family: var(--font-mono);">${(r.recall_at_k * 100).toFixed(1)}%</td>
         <td style="padding: 8px; font-family: var(--font-mono);">${r.mrr.toFixed(3)}</td>
